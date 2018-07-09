@@ -21,7 +21,7 @@ namespace Empower.Mvc.Models
         [MaxLength(1000, ErrorMessage = "Name cannot Exceed 1000 characters")]
         public string Message { get; set; }
         public DateTime? CompletedAt { get; set; }
-        public bool HashErrored =>  !string.IsNullOrEmpty(ErrorMessage);
+        public bool HasErrored =>  !string.IsNullOrEmpty(ErrorMessage);
         public string ErrorMessage { get; set; }
     }
 }

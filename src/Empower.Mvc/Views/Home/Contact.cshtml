@@ -5,7 +5,7 @@
 <h2>@ViewData["Title"]</h2>
 <h3>@ViewData["Message"]</h3>
 
-@if (Model.HashErrored) { 
+@if (Model.HasErrored) { 
     <div class="alert alert-danger">
         <h1>@Model.ErrorMessage</h1>
     </div>
