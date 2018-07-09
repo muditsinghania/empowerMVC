@@ -6,11 +6,18 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Empower.Mvc.Models;
 using System.Net.Mail;
+using Microsoft.Extensions.Configuration;
 
 namespace Empower.Mvc.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly IConfiguration _configuration;
+
+        public HomeController(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
         public IActionResult Index()
         {
             return View();
@@ -30,18 +37,26 @@ namespace Empower.Mvc.Controllers
             if (ModelState.IsValid) {
                 //do something
                 var message = new MailMessage();
-                message.From = new MailAddress("s2empower@gmail.com","SightsourceBOT");
+                message.From = new MailAddress(
+                    _configuration["Contact:FromEmail"],
+                    _configuration["Contact:FromName"]
+                    );
                 message.Subject = "New Contact Message";
                 message.To.Add(
-                    new MailAddress("muditsinghania22@gmail.com"));
+                    new MailAddress(_configuration["Contact:ToEmail"]));
                 message.Body = $"New contact from{viewModel.Name} ({viewModel.Email})" +
                     Environment.NewLine + viewModel.Message;
                 //client smtp new
-                var mailClient = new SmtpClient("email-smtp.us-east-1.amazon.com");
+                var mailClient = new SmtpClient(
+                    _configuration["Contact:SmtpHost"], 
+                    Convert.ToInt32(_configuration["Contact:SmtpPort"])
+                    );
                 mailClient.EnableSsl = true;
-                mailClient.Port = 587;
                 mailClient.UseDefaultCredentials = false;
-                mailClient.Credentials = new System.Net.NetworkCredential("AKIAJZT46OGOXRVDV55Q", "AnQ9XTmy2Bb7g+adRah8ZLVkJzvwQr3y448eeVfqfGg");
+                mailClient.Credentials = new System.Net.NetworkCredential(
+                    _configuration["Contact:SmtpUsername"], 
+                    _configuration["Contact:SmtpPassword"]
+                    );
                 try {
                     //mailClient.Send(message);
                     viewModel.CompletedAt = DateTime.UtcNow;
